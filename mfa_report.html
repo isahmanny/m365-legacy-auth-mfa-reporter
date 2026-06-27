@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M365 Legacy Auth & MFA Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;padding:2rem 2.5rem}
+
+  header{margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #1e293b}
+  .header-top{display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem}
+  .logo{width:42px;height:42px;background:linear-gradient(135deg,#f59e0b,#ef4444);border-radius:10px;
+         display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+  header h1{font-size:1.6rem;font-weight:700;color:#f1f5f9;letter-spacing:-0.02em}
+  .meta{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#475569}
+  .meta span{margin-right:1.5rem}
+  .mock-badge{display:inline-block;background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb;
+               padding:0.2rem 0.6rem;border-radius:4px;font-size:0.65rem;font-weight:600;
+               letter-spacing:0.08em;margin-left:0.75rem;vertical-align:middle}
+
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:2.5rem}
+  .card{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:1.1rem 1.2rem}
+  .card .label{font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+  .card .val{font-size:1.8rem;font-weight:700;margin-top:0.3rem;font-family:'JetBrains Mono',monospace}
+  .card.total  .val{color:#818cf8}
+  .card.high   .val{color:#f87171}
+  .card.medium .val{color:#fbbf24}
+  .card.low    .val{color:#4ade80}
+  .card.nomfa  .val{color:#f87171}
+  .card.legacy .val{color:#fb923c}
+
+  section{margin-bottom:2.5rem}
+  section h2{font-size:0.95rem;font-weight:600;color:#94a3b8;margin-bottom:0.75rem;
+              display:flex;align-items:center;gap:0.4rem}
+  .count{color:#475569;font-weight:400}
+
+  .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #1e293b}
+  table{width:100%;border-collapse:collapse;font-size:0.8rem}
+  thead th{background:#0f172a;color:#475569;font-weight:600;text-transform:uppercase;
+            letter-spacing:0.07em;font-size:0.68rem;padding:0.8rem 1rem;
+            text-align:left;border-bottom:1px solid #1e293b}
+  tbody tr{border-bottom:1px solid #0f172a;transition:background 0.12s}
+  tbody tr:hover{background:#0f172a}
+  tbody tr:last-child{border-bottom:none}
+  tbody td{padding:0.75rem 1rem;color:#cbd5e1;vertical-align:top;line-height:1.6}
+  tbody td small{color:#475569;font-size:0.7rem}
+  .dept{color:#334155}
+  .mono{font-family:'JetBrains Mono',monospace;font-size:0.75rem}
+  .legacy{color:#fb923c}
+  .remed{color:#94a3b8;font-size:0.78rem;line-height:1.8}
+  .empty{text-align:center;color:#334155;padding:1.5rem!important}
+
+  .badge{display:inline-block;padding:0.2rem 0.55rem;border-radius:4px;font-size:0.65rem;
+          font-weight:700;letter-spacing:0.08em;color:#fff;font-family:'JetBrains Mono',monospace}
+  .admin-tag{display:inline-block;background:#312e81;color:#a5b4fc;border:1px solid #4338ca;
+              padding:0.1rem 0.4rem;border-radius:3px;font-size:0.6rem;font-weight:700;
+              letter-spacing:0.08em;margin-left:0.3rem;vertical-align:middle}
+  .no-mfa{color:#f87171;font-weight:600}
+  .weak-mfa{display:inline-block;background:#422006;color:#fbbf24;border:1px solid #92400e;
+             padding:0.15rem 0.45rem;border-radius:3px;font-size:0.72rem;font-weight:600}
+  .strong-mfa{display:inline-block;background:#052e16;color:#4ade80;border:1px solid #166534;
+               padding:0.15rem 0.45rem;border-radius:3px;font-size:0.72rem;font-weight:600}
+
+  footer{text-align:center;color:#334155;font-size:0.72rem;margin-top:3rem;
+          font-family:'JetBrains Mono',monospace;padding-top:1.5rem;border-top:1px solid #1e293b}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">🔐</div>
+    <h1>M365 Legacy Auth & MFA Reporter <span class="mock-badge">SIMULATED DATA</span></h1>
+  </div>
+  <div class="meta">
+    <span>Generated: 2026-06-27 20:07 UTC</span>
+    <span>Tool: mfa_reporter_mock.py</span>
+    <span>Tenant: contoso.onmicrosoft.com</span>
+    <span>Users scanned: 8</span>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="card total">
+    <div class="label">Total Users</div>
+    <div class="val">8</div>
+  </div>
+  <div class="card high">
+    <div class="label">High Risk</div>
+    <div class="val">4</div>
+  </div>
+  <div class="card medium">
+    <div class="label">Medium Risk</div>
+    <div class="val">1</div>
+  </div>
+  <div class="card low">
+    <div class="label">Secure</div>
+    <div class="val">3</div>
+  </div>
+  <div class="card nomfa">
+    <div class="label">No MFA</div>
+    <div class="val">1</div>
+  </div>
+  <div class="card legacy">
+    <div class="label">Legacy Auth</div>
+    <div class="val">4</div>
+  </div>
+</div>
+
+
+        <section>
+          <h2>🔴 High Risk Users — Immediate Action Required <span class="count">(4)</span></h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>User</th><th>MFA Method</th><th>Legacy Auth</th>
+                <th>Risk</th><th>Remediation Steps</th>
+              </tr></thead>
+              <tbody>
+            <tr>
+              <td><strong>Amina Yusuf</strong> <br>
+                  <small>amina.yusuf@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">Finance — Finance Manager</small></td>
+              <td><span class="no-mfa">None</span></td>
+              <td class="mono legacy">IMAP, POP3, SMTP Auth</td>
+              <td><span class="badge" style="background:#dc2626">HIGH</span></td>
+              <td class="remed">• Immediately enrol user in Microsoft Authenticator with Number Matching.<br>• Disable IMAP via Exchange Online Admin → disable legacy auth policy.<br>• Disable POP3 via Exchange Online Admin → disable legacy auth policy.<br>• Disable SMTP Auth unless required for line-of-business apps.</td>
+            </tr>
+            <tr>
+              <td><strong>Chidi Okafor</strong> <span class="admin-tag">ADMIN</span><br>
+                  <small>chidi.okafor@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">IT — IT Administrator</small></td>
+              <td><span class="weak-mfa">SMS</span></td>
+              <td class="mono legacy">SMTP Auth, Exchange ActiveSync</td>
+              <td><span class="badge" style="background:#dc2626">HIGH</span></td>
+              <td class="remed">• Upgrade from SMS to stronger method.<br>• Disable SMTP Auth unless required for line-of-business apps.<br>• Block EAS for non-compliant devices via Conditional Access policy.</td>
+            </tr>
+            <tr>
+              <td><strong>Fatima Al-Hassan</strong> <span class="admin-tag">ADMIN</span><br>
+                  <small>fatima.alhassan@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">Executive — CEO</small></td>
+              <td><span class="weak-mfa">Voice Call</span></td>
+              <td class="mono legacy">IMAP</td>
+              <td><span class="badge" style="background:#dc2626">HIGH</span></td>
+              <td class="remed">• Upgrade from Voice Call to stronger method.<br>• Disable IMAP via Exchange Online Admin → disable legacy auth policy.</td>
+            </tr>
+            <tr>
+              <td><strong>Sarah Adeyemi</strong> <br>
+                  <small>sarah.adeyemi@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">HR — HR Manager</small></td>
+              <td><span class="weak-mfa">Basic Push</span></td>
+              <td class="mono legacy">POP3</td>
+              <td><span class="badge" style="background:#dc2626">HIGH</span></td>
+              <td class="remed">• Upgrade from Basic Push to stronger method.<br>• Disable POP3 via Exchange Online Admin → disable legacy auth policy.</td>
+            </tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>🟡 Medium Risk Users — Remediate Soon <span class="count">(1)</span></h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>User</th><th>MFA Method</th><th>Legacy Auth</th>
+                <th>Risk</th><th>Remediation Steps</th>
+              </tr></thead>
+              <tbody>
+            <tr>
+              <td><strong>James Okonkwo</strong> <br>
+                  <small>james.okonkwo@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">Sales — Sales Lead</small></td>
+              <td><span class="weak-mfa">SMS</span></td>
+              <td class="mono legacy">—</td>
+              <td><span class="badge" style="background:#d97706">MEDIUM</span></td>
+              <td class="remed">• Upgrade from SMS to stronger method.</td>
+            </tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>🟢 Secure Users <span class="count">(3)</span></h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>User</th><th>MFA Method</th><th>Legacy Auth</th>
+                <th>Risk</th><th>Remediation Steps</th>
+              </tr></thead>
+              <tbody>
+            <tr>
+              <td><strong>Michael Eze</strong> <br>
+                  <small>michael.eze@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">Engineering — Software Engineer</small></td>
+              <td><span class="strong-mfa">Microsoft Authenticator (Number Matching)</span></td>
+              <td class="mono legacy">—</td>
+              <td><span class="badge" style="background:#16a34a">LOW</span></td>
+              <td class="remed">—</td>
+            </tr>
+            <tr>
+              <td><strong>Ngozi Ibrahim</strong> <span class="admin-tag">ADMIN</span><br>
+                  <small>ngozi.ibrahim@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">Engineering — DevOps Engineer</small></td>
+              <td><span class="strong-mfa">FIDO2 Security Key</span></td>
+              <td class="mono legacy">—</td>
+              <td><span class="badge" style="background:#16a34a">LOW</span></td>
+              <td class="remed">—</td>
+            </tr>
+            <tr>
+              <td><strong>Ahmed Musa</strong> <br>
+                  <small>ahmed.musa@contoso.onmicrosoft.com</small><br>
+                  <small class="dept">Operations — Operations Manager</small></td>
+              <td><span class="strong-mfa">Microsoft Authenticator (Number Matching)</span></td>
+              <td class="mono legacy">—</td>
+              <td><span class="badge" style="background:#16a34a">LOW</span></td>
+              <td class="remed">—</td>
+            </tr></tbody>
+            </table>
+          </div>
+        </section>
+
+<footer>
+  mfa_reporter_mock.py &nbsp;|&nbsp; AltSchool Africa Cybersecurity Portfolio &nbsp;|&nbsp;
+  White-hat defensive security tool &nbsp;|&nbsp; 2026-06-27 20:07 UTC
+</footer>
+
+</body>
+</html>
